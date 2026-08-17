@@ -1,63 +1,77 @@
-# DSH 临时聊天（dsh-temporary-chat）
+# dsh-temporary-chat
 
-ChatGPT 风格「临时聊天」：**没打开项目/工作区时，默认进入一个真正临时的会话** —— 不落盘、不进侧边栏历史、关闭/刷新即丢弃，但工具仍跑在默认目录 `~/.dsh` 下。
+English | [中文](README.zh.md)
 
-## 一键安装（三选一）
+A DSH Web plugin that adds a ChatGPT-style temporary chat: with no workspace open, the default new session is a genuinely temporary conversation — never persisted, hidden from the sidebar, and discarded on close or refresh. Tools still run under the default directory `~/.dsh`.
 
-**方式一：npx 直接打补丁（推荐，不装全局包）**
+> Note: this plugin depends on **internal (non-public) DSH APIs** and is coupled to a specific DSH version; verified against `@deepseek-ai/dsh@0.1.0-rc.6`. Re-verify after DSH upgrades.
 
-```bash
+## Features
+
+- **Default temporary chat** — with no workspace open, the default new session is temporary.
+- **Truly ephemeral** — not persisted to disk, not listed in the sidebar, gone on close/refresh.
+- **Tools still work** — the session runs under the default directory `~/.dsh`.
+- **Unchanged with a workspace** — with a project/workspace open, behavior is normal (persisted).
+
+## Install
+
+```sh
+dsh plugin --profile web add https://github.com/Xinyu-lumos/dsh-temporary-chat
+```
+
+Restart the DSH Web process and hard-refresh the browser after installing.
+
+Once published to npm, these also work:
+
+```sh
+npm install -g dsh-temporary-chat
+# or
 npx dsh-temporary-chat-patch
 ```
 
-**方式二：npm 全局安装（postinstall 自动打补丁）**
+## How it works
 
-```bash
-npm install -g dsh-temporary-chat
+DSH does not currently expose extension points for temporary sessions (the session model has no `temporary` flag and persistence writes every session unconditionally), so this feature is implemented by patching six compiled files:
+
+| File | Package | Effect |
+| --- | --- | --- |
+| `lib/index.js` | `dsh-host-apiproxy` | `temporary` flag propagation + `~/.dsh` default cwd |
+| `lib/index.js` | `dsh-session-persistence` | skip persistence for temporary sessions |
+| `lib/client.js` | `dsh-client-connection` | `temporary` in the wire schemas |
+| `lib/client.js` | `dsh-client-runtime` | default temporary session on connect |
+| `lib/client.js` | `dsh-client-ui-workspace` | hide temporary sessions from the sidebar |
+| `lib/client.js` | `dsh-client-ui-conversation` | typeable without selecting a workspace |
+
+The package ships an auto-patch script (`scripts/apply-patch.mjs`) that locates DSH and applies every file on install — idempotent (already-patched files are skipped) and non-fatal (never fails the install). Original files are backed up as `.bak`.
+
+If the auto-patch did not run (for example a pnpm security policy disabled postinstall, or DSH could not be located), run it manually from the profile directory:
+
+```sh
+node node_modules/dsh-temporary-chat/scripts/apply-patch.mjs
 ```
 
-**方式三：DSH 插件市场（发布到 awesome-dsh-plugin 后可用）**
+If DSH still cannot be located, point `DSH_ROOT` at the DSH install root (the output of `npm root -g`):
 
-```bash
-dsh plugin add dsh-temporary-chat
+```sh
+DSH_ROOT="/absolute/path/to/node_modules" node node_modules/dsh-temporary-chat/scripts/apply-patch.mjs
 ```
 
-安装完成后：**重启 `dsh web`**（host 端改动需重启）＋ **硬刷新浏览器**（Ctrl+Shift+R）。
+Reinstalling or upgrading the matching `@deepseek-ai/dsh-*` package overwrites the patch; re-run the script to re-apply.
 
-> 若脚本自动找不到 DSH 安装位置（多在非标准安装时），设置环境变量 `DSH_ROOT` 指向 npm 全局根目录（`npm root -g` 的结果）后重试。
+## Rollback
 
-## 行为
+Restore each patched file from its adjacent `.bak` backup, or reinstall DSH.
 
-- 无工作区时（启动 / 点「新建会话」）直接进入可输入的临时会话
-- 该会话**不保存到磁盘**、**不出现在侧边栏历史**
-- 关闭标签页 / 刷新后消失，重新进入是全新的空临时会话
-- 打开真实项目/工作区时行为不变（正常持久化）
+## Compatibility
 
-## 原理
+Verified against `@deepseek-ai/dsh@0.1.0-rc.6`. Depends on internal APIs of `@deepseek-ai/dsh-host-apiproxy`, `@deepseek-ai/dsh-session-persistence`, `@deepseek-ai/dsh-client-connection`, `@deepseek-ai/dsh-client-runtime`, `@deepseek-ai/dsh-client-ui-workspace` and `@deepseek-ai/dsh-client-ui-conversation`; re-verify after DSH upgrades.
 
-本包随包分发 6 个改动后的 DSH 核心文件（`packages/` 目录，与原包目录同构），安装时把它们覆盖到已安装的 `@deepseek-ai/dsh-*` 包目录，并在覆盖前备份原文件为 `.bak`。改动分两部分：
+## Known limitations
 
-- **host 端**（`dsh-host-apiproxy`、`dsh-session-persistence`）：`temporary` 标记透传＋持久化跳过 —— 需重启 `dsh web`
-- **client 端**（`dsh-client-connection`、`dsh-client-runtime`、`dsh-client-ui-workspace`、`dsh-client-ui-conversation`）：默认进临时会话＋侧边栏隐藏 —— 刷新即生效
+- A live temporary session may briefly appear in `session.search` (search visibility shares the `session.list` baseline).
+- Discarded temporary sessions remain in memory until the host restarts (hidden, never persisted).
+- The header chip shows `.dsh` rather than a localized label.
 
-逐点变更见 `CHANGES.md`。脚本**幂等**（目标已一致则跳过）、**尽力而为**（失败不阻断安装）。
+## License
 
-## 回滚 / 卸载
-
-把目标文件旁自动生成的 `.bak` 覆盖回去即可（每个被改文件旁都有一个 `xxx.bak`）。或直接重装 DSH。
-
-## 发布
-
-```bash
-cd dsh-temporary-chat
-npm publish --access public
-```
-
-发布到 npm 后，他人即可用上面三种方式之一一键安装。若想进入 DSH 官方插件市场，再向 awesome-dsh-plugin 注册仓库即可（参照社区插件 `dsh-session-delete` / `dsh-better-sidebar` 的做法）。
-
-## 已知限制
-
-- 临时会话存活期间可能短暂出现在 `session.search` 结果里（搜索可见性与 `session.list` 共用基线）
-- host 重启前，被丢弃的临时会话仍在内存里（隐藏、未落盘，量级很小）
-- 顶部 chip 文案显示 `.dsh`，而非「临时聊天」
-- 覆盖式打补丁绑定当前 DSH 版本；DSH 升级后若这 6 个文件变动，需重跑安装脚本
+[MIT](LICENSE)
