@@ -1,0 +1,26 @@
+{
+  "name": "dsh-temporary-chat",
+  "version": "0.1.0",
+  "description": "DSH Web 插件：ChatGPT 风格临时聊天（免打开项目、不落盘、关闭即丢弃，工具跑在 ~/.dsh）",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "dsh-temporary-chat-patch": "./scripts/apply-patch.mjs"
+  },
+  "scripts": {
+    "postinstall": "node scripts/apply-patch.mjs"
+  },
+  "files": [
+    "scripts/",
+    "packages/",
+    "README.md",
+    "CHANGES.md"
+  ],
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "temporary-chat",
+    "chatgpt",
+    "临时聊天"
+  ]
+}
