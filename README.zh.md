@@ -21,14 +21,6 @@ dsh plugin --profile web add https://github.com/Xinyu-lumos/dsh-temporary-chat
 
 安装后重启 DSH Web 进程并硬刷新浏览器。
 
-发布到 npm 后，也可用：
-
-```sh
-npm install -g dsh-temporary-chat
-# 或
-npx dsh-temporary-chat-patch
-```
-
 ## 原理
 
 DSH 目前没有为「临时会话」提供扩展点（会话模型没有 `temporary` 标记，持久化层无条件持久化每个会话），因此本特性通过给六个编译产物打补丁实现：

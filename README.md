@@ -21,14 +21,6 @@ dsh plugin --profile web add https://github.com/Xinyu-lumos/dsh-temporary-chat
 
 Restart the DSH Web process and hard-refresh the browser after installing.
 
-Once published to npm, these also work:
-
-```sh
-npm install -g dsh-temporary-chat
-# or
-npx dsh-temporary-chat-patch
-```
-
 ## How it works
 
 DSH does not currently expose extension points for temporary sessions (the session model has no `temporary` flag and persistence writes every session unconditionally), so this feature is implemented by patching six compiled files:
