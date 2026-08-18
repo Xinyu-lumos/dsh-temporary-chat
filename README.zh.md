@@ -19,7 +19,14 @@
 dsh plugin --profile web add https://github.com/Xinyu-lumos/dsh-temporary-chat
 ```
 
-安装后重启 DSH Web 进程并硬刷新浏览器。
+安装后请先在 DSH Web 停止时应用补丁，再启动 DSH Web：
+
+```sh
+node node_modules/dsh-temporary-chat/scripts/apply-patch.mjs apply
+dsh web
+```
+
+启动后硬刷新浏览器。如果安装时 DSH 已在运行，首次激活可能只完成磁盘补丁，安全起见再重启一次。
 
 ## 原理
 
@@ -34,21 +41,20 @@ DSH 目前没有为「临时会话」提供扩展点（会话模型没有 `tempo
 | `lib/client.js` | `dsh-client-ui-workspace` | 侧边栏隐藏临时会话 |
 | `lib/client.js` | `dsh-client-ui-conversation` | 无需选择工作区即可输入 |
 
-本包是标准 DSH host 插件。DSH 激活插件时，`index.js` 会调用 `lib/apply.js` 中的可复用补丁器；无需 install/build 脚本，因此不需要执行 pnpm `approve-builds`。补丁过程幂等（目标一致则跳过）、失败不阻断启动，原文件备份为 `.bak`。
+本包是标准 DSH host 插件。DSH 激活时会应用一份声明式小补丁清单；无需 install/build 脚本，因此不需要执行 pnpm `approve-builds`。修改前会先确认唯一的 DSH 安装、要求 `@deepseek-ai/dsh@0.1.0-rc.6` 及六个对应包版本一致，并校验所有补丁锚点。事务采用全有或全无策略，保留 CRLF 换行，在 DSH home 下生成内容寻址备份，并支持状态检查、恢复和可逆卸载。
 
-若插件激活时定位不到 DSH，可在 profile 目录手动执行补丁器：
-
-```sh
-node node_modules/dsh-temporary-chat/scripts/apply-patch.mjs
-```
-
-仍定位不到时，把 `DSH_ROOT` 指向 DSH 安装根目录（`npm root -g` 的输出）：
+如需显式执行，可使用内置 CLI：
 
 ```sh
-DSH_ROOT="/absolute/path/to/node_modules" node node_modules/dsh-temporary-chat/scripts/apply-patch.mjs
+node node_modules/dsh-temporary-chat/scripts/apply-patch.mjs status
+node node_modules/dsh-temporary-chat/scripts/apply-patch.mjs apply
+node node_modules/dsh-temporary-chat/scripts/apply-patch.mjs unpatch
+node node_modules/dsh-temporary-chat/scripts/apply-patch.mjs recover
 ```
 
-重装或升级对应的 `@deepseek-ai/dsh-*` 包会覆盖补丁；重跑脚本即可重新应用。
+当机器上有多个 DSH 安装，或自动发现不到目标安装时，设置 `DSH_ROOT` 指向 DSH 的 npm 根目录。版本不支持或锚点已被修改时会拒绝操作，不会修改文件。
+
+重装或升级对应的 `@deepseek-ai/dsh-*` 包不会静默重新应用补丁；确认新版本后再检查状态并重新 apply。
 
 ## 回滚
 

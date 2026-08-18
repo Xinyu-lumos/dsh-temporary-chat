@@ -19,7 +19,14 @@ A DSH Web plugin that adds a ChatGPT-style temporary chat: with no workspace ope
 dsh plugin --profile web add https://github.com/Xinyu-lumos/dsh-temporary-chat
 ```
 
-Restart the DSH Web process and hard-refresh the browser after installing.
+After installation, apply the patch while DSH Web is stopped, then start DSH Web:
+
+```sh
+node node_modules/dsh-temporary-chat/scripts/apply-patch.mjs apply
+dsh web
+```
+
+After the next start, hard-refresh the browser. The first activation may only install the on-disk patch; restarting once more is safe and may be required if DSH was already running during activation.
 
 ## How it works
 
@@ -34,21 +41,20 @@ DSH does not currently expose extension points for temporary sessions (the sessi
 | `lib/client.js` | `dsh-client-ui-workspace` | hide temporary sessions from the sidebar |
 | `lib/client.js` | `dsh-client-ui-conversation` | typeable without selecting a workspace |
 
-The package is a standard DSH host plugin. When DSH activates it, `index.js` invokes the reusable patcher in `lib/apply.js`; no install/build script is required, so pnpm `approve-builds` is not needed. Applying is idempotent (matching files are skipped), non-fatal, and the original files are backed up as `.bak`.
+The package is a standard DSH host plugin. It applies a small, declarative patch manifest when DSH activates it; no install/build script is required, so pnpm `approve-builds` is not needed. Before changing anything it checks one canonical DSH installation, requires `@deepseek-ai/dsh@0.1.0-rc.6` and all six matching package versions, and validates every owned anchor. The transaction is all-or-nothing, preserves CRLF files, writes content-addressed backups under the DSH home, and supports status, recovery, and reversible unpatching.
 
-If plugin activation could not locate DSH, run the patcher manually from the profile directory:
-
-```sh
-node node_modules/dsh-temporary-chat/scripts/apply-patch.mjs
-```
-
-If DSH still cannot be located, point `DSH_ROOT` at the DSH install root (the output of `npm root -g`):
+For an explicit operation, use the bundled CLI:
 
 ```sh
-DSH_ROOT="/absolute/path/to/node_modules" node node_modules/dsh-temporary-chat/scripts/apply-patch.mjs
+node node_modules/dsh-temporary-chat/scripts/apply-patch.mjs status
+node node_modules/dsh-temporary-chat/scripts/apply-patch.mjs apply
+node node_modules/dsh-temporary-chat/scripts/apply-patch.mjs unpatch
+node node_modules/dsh-temporary-chat/scripts/apply-patch.mjs recover
 ```
 
-Reinstalling or upgrading the matching `@deepseek-ai/dsh-*` package overwrites the patch; re-run the script to re-apply.
+Set `DSH_ROOT` to the DSH npm root when more than one installation exists or automatic discovery cannot find the intended installation. Unsupported versions and changed anchors are rejected without modifying files.
+
+Reinstalling or upgrading the matching `@deepseek-ai/dsh-*` package does not silently reapply the patch; inspect status and apply again only after the package has been verified.
 
 ## Rollback
 

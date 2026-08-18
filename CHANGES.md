@@ -42,3 +42,14 @@
 ## 6. dsh-client-ui-conversation/lib/client.js（client，刷新）
 
 1. `chipTitle` 计算移除 `workspaces.phase === "ready" ||` 门控：只要会话有 cwd 就可直接输入，不再被强制"选择工作区"。
+
+## 7. 0.2.0 发布工程变更
+
+- 移除完整 DSH bundle 覆盖；补丁现在由 `lib/manifest.js` 中的 24 个定向锚点组成。
+- 只接受单一 `@deepseek-ai/dsh@0.1.0-rc.6` 安装，并校验六个目标包版本。
+- 应用前全量预检；任一版本、路径、锚点或目标状态不兼容时零写入。
+- 使用事务日志、内容寻址备份、锁文件和写后 SHA-256 校验。
+- 支持 `status`、`apply`、`unpatch`、`recover` 命令，并保留其他插件对未拥有区域的修改。
+- 移除曾混入的 `dsh-session-delete` bundle 内容；该插件不再携带完整 `dsh-client-ui-workspace` 文件。
+- 新增 `THIRD_PARTY_NOTICES.md`，保留 DeepSeek MIT 版权声明。
+- 新增 Node 测试覆盖幂等、回滚、版本不匹配、锚点损坏、CRLF 和第三方插件共存。
