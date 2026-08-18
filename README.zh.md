@@ -41,7 +41,7 @@ DSH 目前没有为「临时会话」提供扩展点（会话模型没有 `tempo
 | `lib/client.js` | `dsh-client-ui-workspace` | 侧边栏隐藏临时会话 |
 | `lib/client.js` | `dsh-client-ui-conversation` | 无需选择工作区即可输入 |
 
-本包是标准 DSH host 插件。DSH 激活时会应用一份声明式小补丁清单；无需 install/build 脚本，因此不需要执行 pnpm `approve-builds`。修改前会先确认唯一的 DSH 安装、要求 `@deepseek-ai/dsh@0.1.0-rc.6` 及六个对应包版本一致，并校验所有补丁锚点。事务采用全有或全无策略，保留 CRLF 换行，在 DSH home 下生成内容寻址备份，并支持状态检查、恢复和可逆卸载。
+本包是标准 DSH host 插件。DSH 激活时只检查声明式小补丁清单，不会在激活阶段修改文件。无需 install/build 脚本，因此不需要执行 pnpm `approve-builds`。修改前会先确认唯一的 DSH 安装、要求 `@deepseek-ai/dsh@0.1.0-rc.6` 及六个对应包版本一致，并校验所有补丁锚点。事务采用全有或全无策略，保留 CRLF 换行，在 DSH home 下生成内容寻址备份，并支持状态检查、恢复和可逆卸载。
 
 如需显式执行，可使用内置 CLI：
 

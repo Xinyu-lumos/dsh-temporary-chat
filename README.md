@@ -41,7 +41,7 @@ DSH does not currently expose extension points for temporary sessions (the sessi
 | `lib/client.js` | `dsh-client-ui-workspace` | hide temporary sessions from the sidebar |
 | `lib/client.js` | `dsh-client-ui-conversation` | typeable without selecting a workspace |
 
-The package is a standard DSH host plugin. It applies a small, declarative patch manifest when DSH activates it; no install/build script is required, so pnpm `approve-builds` is not needed. Before changing anything it checks one canonical DSH installation, requires `@deepseek-ai/dsh@0.1.0-rc.6` and all six matching package versions, and validates every owned anchor. The transaction is all-or-nothing, preserves CRLF files, writes content-addressed backups under the DSH home, and supports status, recovery, and reversible unpatching.
+The package is a standard DSH host plugin. When DSH activates it, the plugin only checks a small, declarative patch manifest; it never mutates files during activation. No install/build script is required, so pnpm `approve-builds` is not needed. Before changing anything it checks one canonical DSH installation, requires `@deepseek-ai/dsh@0.1.0-rc.6` and all six matching package versions, and validates every owned anchor. The transaction is all-or-nothing, preserves CRLF files, writes content-addressed backups under the DSH home, and supports status, recovery, and reversible unpatching.
 
 For an explicit operation, use the bundled CLI:
 
