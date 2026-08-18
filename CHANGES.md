@@ -53,3 +53,4 @@
 - 移除曾混入的 `dsh-session-delete` bundle 内容；该插件不再携带完整 `dsh-client-ui-workspace` 文件。
 - 新增 `THIRD_PARTY_NOTICES.md`，保留 DeepSeek MIT 版权声明。
 - 新增 Node 测试覆盖幂等、回滚、版本不匹配、锚点损坏、CRLF 和第三方插件共存。
+- 文档明确：上游 `.d.ts` 不会同步修改，临时字段仅作为内部运行时协议使用。

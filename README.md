@@ -69,6 +69,7 @@ Verified against `@deepseek-ai/dsh@0.1.0-rc.6`. Depends on internal APIs of `@de
 - A live temporary session may briefly appear in `session.search` (search visibility shares the `session.list` baseline).
 - Discarded temporary sessions remain in memory until the host restarts (hidden, never persisted).
 - The header chip shows `.dsh` rather than a localized label.
+- Upstream `.d.ts` declarations are not modified; `temporary` and the related runtime fields are internal patched protocol data, not a supported public TypeScript API.
 
 ## License
 

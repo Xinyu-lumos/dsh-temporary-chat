@@ -69,6 +69,7 @@ node node_modules/dsh-temporary-chat/scripts/apply-patch.mjs recover
 - 临时会话存活期间可能短暂出现在 `session.search` 结果里（搜索可见性与 `session.list` 共用基线）。
 - 被丢弃的临时会话在 host 重启前仍留在内存里（隐藏、未落盘）。
 - 顶部 chip 显示 `.dsh`，而非本地化的「临时聊天」标签。
+- 不修改上游 `.d.ts` 声明；`temporary` 及相关运行时字段属于内部补丁协议数据，不是对外承诺的 TypeScript 公共 API。
 
 ## 许可证
 
