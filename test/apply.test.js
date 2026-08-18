@@ -71,6 +71,9 @@ test('manifest contains only temporary-chat changes', () => {
   assert.equal(text.includes('/_dsh/session-delete'), false);
   assert.equal(PATCH_MANIFEST.length, 6);
   assert.equal(PATCH_MANIFEST.reduce((count, entry) => count + entry.changes.length, 0), 24);
+  const host = PATCH_MANIFEST.find((entry) => entry.package.endsWith('dsh-host-apiproxy'));
+  const cwdChange = host.changes.find((change) => change.id === 'dsh-host-apiproxy-7');
+  assert.match(cwdChange.after, /temporary === true \? resolveDshHome\(\) : defaults\.cwd/);
 });
 
 test('apply is idempotent and unpatch is reversible', () => {

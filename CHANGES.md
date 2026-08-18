@@ -54,3 +54,4 @@
 - 新增 `THIRD_PARTY_NOTICES.md`，保留 DeepSeek MIT 版权声明。
 - 新增 Node 测试覆盖幂等、回滚、版本不匹配、锚点损坏、CRLF 和第三方插件共存。
 - 文档明确：上游 `.d.ts` 不会同步修改，临时字段仅作为内部运行时协议使用。
+- 修正 host cwd 回退：只有 `request.payload.temporary === true` 时才使用 `resolveDshHome()`；普通无工作区会话继续使用 DSH 原有 `defaults.cwd`。

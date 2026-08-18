@@ -34,7 +34,7 @@ DSH does not currently expose extension points for temporary sessions (the sessi
 
 | File | Package | Effect |
 | --- | --- | --- |
-| `lib/index.js` | `dsh-host-apiproxy` | `temporary` flag propagation + `~/.dsh` default cwd |
+| `lib/index.js` | `dsh-host-apiproxy` | `temporary` flag propagation + `~/.dsh` cwd for temporary sessions only |
 | `lib/index.js` | `dsh-session-persistence` | skip persistence for temporary sessions |
 | `lib/client.js` | `dsh-client-connection` | `temporary` in the wire schemas |
 | `lib/client.js` | `dsh-client-runtime` | default temporary session on connect |

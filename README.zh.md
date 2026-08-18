@@ -34,7 +34,7 @@ DSH 目前没有为「临时会话」提供扩展点（会话模型没有 `tempo
 
 | 文件 | 包 | 作用 |
 | --- | --- | --- |
-| `lib/index.js` | `dsh-host-apiproxy` | `temporary` 标记透传 + `~/.dsh` 默认目录 |
+| `lib/index.js` | `dsh-host-apiproxy` | `temporary` 标记透传 + 仅临时会话使用 `~/.dsh` 目录 |
 | `lib/index.js` | `dsh-session-persistence` | 临时会话跳过持久化 |
 | `lib/client.js` | `dsh-client-connection` | wire schema 加 `temporary` |
 | `lib/client.js` | `dsh-client-runtime` | 连接时默认进入临时会话 |
