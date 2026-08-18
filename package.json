@@ -1,10 +1,15 @@
 {
   "name": "dsh-temporary-chat",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "DSH Web plugin: ChatGPT-style temporary chat (no project needed, not persisted, gone on close)",
   "license": "MIT",
   "author": "Xinyu-lumos",
   "type": "module",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Xinyu-lumos/dsh-temporary-chat"
@@ -13,15 +18,23 @@
   "bugs": {
     "url": "https://github.com/Xinyu-lumos/dsh-temporary-chat/issues"
   },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
   "bin": {
     "dsh-temporary-chat-patch": "./scripts/apply-patch.mjs"
   },
   "scripts": {
-    "postinstall": "node scripts/apply-patch.mjs"
+    "patch": "node scripts/apply-patch.mjs"
   },
   "files": [
+    "index.js",
+    "lib/",
     "scripts/",
     "packages/",
+    "cordis.patch.yml",
     "README.md",
     "README.zh.md",
     "CHANGES.md",

@@ -42,9 +42,9 @@ DSH does not currently expose extension points for temporary sessions (the sessi
 | `lib/client.js` | `dsh-client-ui-workspace` | hide temporary sessions from the sidebar |
 | `lib/client.js` | `dsh-client-ui-conversation` | typeable without selecting a workspace |
 
-The package ships an auto-patch script (`scripts/apply-patch.mjs`) that locates DSH and applies every file on install — idempotent (already-patched files are skipped) and non-fatal (never fails the install). Original files are backed up as `.bak`.
+The package is a standard DSH host plugin. When DSH activates it, `index.js` invokes the reusable patcher in `lib/apply.js`; no install/build script is required, so pnpm `approve-builds` is not needed. Applying is idempotent (matching files are skipped), non-fatal, and the original files are backed up as `.bak`.
 
-If the auto-patch did not run (for example a pnpm security policy disabled postinstall, or DSH could not be located), run it manually from the profile directory:
+If plugin activation could not locate DSH, run the patcher manually from the profile directory:
 
 ```sh
 node node_modules/dsh-temporary-chat/scripts/apply-patch.mjs

@@ -42,9 +42,9 @@ DSH 目前没有为「临时会话」提供扩展点（会话模型没有 `tempo
 | `lib/client.js` | `dsh-client-ui-workspace` | 侧边栏隐藏临时会话 |
 | `lib/client.js` | `dsh-client-ui-conversation` | 无需选择工作区即可输入 |
 
-包内自带自动打补丁脚本（`scripts/apply-patch.mjs`），安装时自动定位 DSH 并覆盖每个文件——幂等（已打补丁则跳过）、尽力而为（失败不阻断安装）。原文件备份为 `.bak`。
+本包是标准 DSH host 插件。DSH 激活插件时，`index.js` 会调用 `lib/apply.js` 中的可复用补丁器；无需 install/build 脚本，因此不需要执行 pnpm `approve-builds`。补丁过程幂等（目标一致则跳过）、失败不阻断启动，原文件备份为 `.bak`。
 
-若自动打补丁未运行（如 pnpm 安全策略禁用了 postinstall，或定位不到 DSH），在 profile 目录手动执行：
+若插件激活时定位不到 DSH，可在 profile 目录手动执行补丁器：
 
 ```sh
 node node_modules/dsh-temporary-chat/scripts/apply-patch.mjs
